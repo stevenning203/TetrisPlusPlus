@@ -1,5 +1,6 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <ctime>
 
 int tilesize = 40;
 int frames_since_last_moved = 0;
@@ -42,6 +43,17 @@ void keycallback(GLFWwindow* window, int key, int scancode, int action, int mods
     if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
     { 
         left_key_pressed = true;
+        bool left_move_able = false;
+        for (int row = 0; row < 20; row++)
+        {
+            for (int col = 0; col < 10; row++)
+            {
+                if (board[row][col] == 'L')
+                {
+
+                }
+            }
+        }
         for (int row = 19; row >= 0; row--)
         {
             for (int col = 1; col < 10; col++)
@@ -57,17 +69,18 @@ void keycallback(GLFWwindow* window, int key, int scancode, int action, int mods
     if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
     {
         right_key_pressed = true;
-        for (int row = 19; row >= 0; row--)
-        {
-            for (int col = 8; col >= 0; col--)
+
+            for (int row = 19; row >= 0; row--)
             {
-                if (board[row][col] == 'L')
+                for (int col = 8; col >= 0; col--)
                 {
-                    board[row][col] = NULL;
-                    board[row][col + 1] = 'L';
+                    if (board[row][col] == 'L')
+                    {
+                        board[row][col] = NULL;
+                        board[row][col + 1] = 'L';
+                    }
                 }
             }
-        }
     }
     if (key == GLFW_KEY_UP)
     {
@@ -134,6 +147,7 @@ void drawrect(int x, int y, int w, int h, int r, int g, int b)
 
 int main()
 {
+    srand(time(NULL));
     GLFWwindow* window;
     if (!glfwInit())
         return -1;
@@ -155,9 +169,24 @@ int main()
 
         drawrect(0, 0, 400, 800, 0, 0, 0);
 
-        for (int i = 0; i < 10; i++)
+        for (int j = 0; j < 20; j++)
         {
-            for (int j = 0; j < 20; j++)
+            bool toggle = true;
+            for (int p = 0; p < 10; p++)
+            {
+                if (board[j][p] == NULL || board[j][p] == 'L')
+                {
+                    toggle = false;
+                }
+            }
+            if (toggle)
+            {
+                for (int p = 0; p < 10; p++)
+                {
+                    board[j][p] = NULL;
+                }
+            }
+            for (int i = 0; i < 10; i++)
             {
                 if (board[j][i] != NULL)
                 {
