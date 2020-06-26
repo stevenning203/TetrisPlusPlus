@@ -43,25 +43,36 @@ void keycallback(GLFWwindow* window, int key, int scancode, int action, int mods
     if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
     { 
         left_key_pressed = true;
-        bool left_move_able = false;
+        bool left_move_able = true;
         for (int row = 0; row < 20; row++)
-        {
-            for (int col = 0; col < 10; row++)
-            {
-                if (board[row][col] == 'L')
-                {
-
-                }
-            }
-        }
-        for (int row = 19; row >= 0; row--)
         {
             for (int col = 1; col < 10; col++)
             {
                 if (board[row][col] == 'L')
                 {
-                    board[row][col] = NULL;
-                    board[row][col - 1] = 'L';
+                    if (board[row][col - 1] != NULL && board[row][col - 1] != 'L')
+                    {
+                        left_move_able = false;
+                    }
+                    
+                }
+                if (board[row][0] == 'L')
+                {
+                    left_move_able = false;
+                }
+            }
+        }
+        if (left_move_able)
+        {
+            for (int row = 19; row >= 0; row--)
+            {
+                for (int col = 1; col < 10; col++)
+                {
+                    if (board[row][col] == 'L')
+                    {
+                        board[row][col] = NULL;
+                        board[row][col - 1] = 'L';
+                    }
                 }
             }
         }
@@ -69,7 +80,28 @@ void keycallback(GLFWwindow* window, int key, int scancode, int action, int mods
     if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
     {
         right_key_pressed = true;
+        bool right_move_able = true;
+        for (int row = 0; row < 20; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (board[row][col] == 'L')
+                {
+                    if (board[row][col + 1] != NULL && board[row][col + 1] != 'L')
+                    {
+                        right_move_able = false;
+                    }
 
+                }
+                if (board[row][9] == 'L')
+                {
+                    right_move_able = false;
+                }
+            }
+        }
+
+        if (right_move_able)
+        {
             for (int row = 19; row >= 0; row--)
             {
                 for (int col = 8; col >= 0; col--)
@@ -81,6 +113,7 @@ void keycallback(GLFWwindow* window, int key, int scancode, int action, int mods
                     }
                 }
             }
+        }
     }
     if (key == GLFW_KEY_UP)
     {
@@ -96,26 +129,54 @@ void keycallback(GLFWwindow* window, int key, int scancode, int action, int mods
 void new_piece()
 {
     int new_piece_rand = rand() % 7;
-    if (new_piece_rand == 0)
+    if (new_piece_rand == 0) //square
     {
         board[0][4] = 'L';
         board[0][5] = 'L';
         board[1][4] = 'L';
         board[1][5] = 'L';
     }
-    else if (new_piece_rand == 1)
+    else if (new_piece_rand == 1) // I piece
     {
         board[0][4] = 'L';
         board[1][4] = 'L';
         board[2][4] = 'L';
         board[3][4] = 'L';
     }
-    else if (new_piece_rand == 2)
+    else if (new_piece_rand == 2) // S piece
     {
         board[0][4] = 'L';
         board[1][4] = 'L';
         board[1][5] = 'L';
         board[2][5] = 'L';
+    }
+    else if (new_piece_rand == 3) // Z piece
+    {
+        board[0][5] = 'L';
+        board[1][5] = 'L';
+        board[1][4] = 'L';
+        board[2][4] = 'L';
+    }
+    else if (new_piece_rand == 4) // T piece
+    {
+        board[0][4] = 'L';
+        board[1][4] = 'L';
+        board[2][4] = 'L';
+        board[1][5] = 'L';
+    }
+    else if (new_piece_rand == 5) // L reverse piece
+    {
+        board[0][4] = 'L';
+        board[1][4] = 'L';
+        board[2][4] = 'L';
+        board[2][5] = 'L';
+    }
+    else if (new_piece_rand == 6) // L piece
+    {
+        board[0][5] = 'L';
+        board[1][5] = 'L';
+        board[2][5] = 'L';
+        board[2][4] = 'L';
     }
 }
 
