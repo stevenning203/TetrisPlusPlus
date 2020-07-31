@@ -14,11 +14,16 @@ int green[3] = { 0, 255, 0 };
 int purple[3] = { 153, 0, 255 };
 bool live_piece = false;
 int color_array[7] = { 'r', 'b', 'c', 'o', 'y', 'g', 'p' };
+int score = 0;
+int frame_count = 0;
+int temp_frame = NULL;
 
 bool left_key_pressed = false;
 bool up_key_pressed = false;
 bool right_key_pressed = false;
 bool down_key_pressed = false;
+bool solidify_next_frame = false;
+bool live_piece_is_stable = false;
 
 bool is_static_piece(char piece)
 {
@@ -230,21 +235,23 @@ int main()
 
         drawrect(0, 0, 400, 800, 0, 0, 0);
 
+        live_piece_is_stable = false;
         for (int j = 0; j < 20; j++)
         {
-            bool toggle = true;
+            bool remove_layer = true;
             for (int p = 0; p < 10; p++)
             {
                 if (board[j][p] == NULL || board[j][p] == 'L')
                 {
-                    toggle = false;
+                    remove_layer = false;
                 }
             }
-            if (toggle)
+            if (remove_layer)
             {
                 for (int p = 0; p < 10; p++)
                 {
                     board[j][p] = NULL;
+
                 }
             }
             for (int i = 0; i < 10; i++)
@@ -286,30 +293,45 @@ int main()
                     {
                         if (j == 19 || (board[j + 1][i] != 'L' && board[j+1][i] != NULL))
                         {
-                            live_piece = false;
-                            int index = rand() % 7;
-                            char choice = color_array[index];
-                            for (int row = 19; row >= 0; row--)
+                            live_piece_is_stable = true;
+                            solidify_next_frame = true;
+                            if (temp_frame == NULL)
                             {
-                                for (int col = 0; col < 10; col++)
+                                temp_frame = frame_count;
+                            }
+                            if (solidify_next_frame == true && frame_count - temp_frame >= 60)
+                            {
+                                live_piece = false;
+                                int index = rand() % 7;
+                                char choice = color_array[index];
+                                for (int row = 19; row >= 0; row--)
                                 {
-                                    if (board[row][col] == 'L')
+                                    for (int col = 0; col < 10; col++)
                                     {
-                                        board[row][col] = choice;
+                                        if (board[row][col] == 'L')
+                                        {
+                                            board[row][col] = choice;
+                                        }
                                     }
                                 }
+                                solidify_next_frame = false;
+                                temp_frame = NULL;
                             }
                         }
                         else
                         {
                             live_piece = true;
-                            if (frames_since_last_moved == 60)
+                            if (frames_since_last_moved >= 60 && solidify_next_frame == false && !live_piece_is_stable)
                             {
                                 frames_since_last_moved = 0;
-                                for (int row = 18; row >= 0; row--)
+                                for (int col = 0; col < 10; col++)
                                 {
-                                    for (int col = 0; col < 10; col++)
+                                    for (int row = 19; row >= 0; row--)
                                     {
+                                        if (row == 19)
+                                        {
+                                            continue;
+                                        }
                                         if (board[row][col] == 'L')
                                         {
                                             board[row][col] = NULL;
@@ -324,12 +346,18 @@ int main()
                 }
             }
         }
+        if (live_piece_is_stable == false)
+        {
+            solidify_next_frame = false;
+            temp_frame = NULL;
+        }
 
         if (live_piece == false)
         {
             new_piece();
         }
         frames_since_last_moved += 1;
+        frame_count += 1;
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
