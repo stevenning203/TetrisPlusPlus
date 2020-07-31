@@ -17,6 +17,7 @@ int color_array[7] = { 'r', 'b', 'c', 'o', 'y', 'g', 'p' };
 int score = 0;
 int frame_count = 0;
 int temp_frame = NULL;
+int row_pushdown_limit = NULL;
 
 bool left_key_pressed = false;
 bool up_key_pressed = false;
@@ -24,6 +25,7 @@ bool right_key_pressed = false;
 bool down_key_pressed = false;
 bool solidify_next_frame = false;
 bool live_piece_is_stable = false;
+bool remove_layer = false;
 
 bool is_static_piece(char piece)
 {
@@ -133,7 +135,8 @@ void keycallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 void new_piece()
 {
-    int new_piece_rand = rand() % 7;
+    //int new_piece_rand = rand() % 7;
+    int new_piece_rand = 1;
     if (new_piece_rand == 0) //square
     {
         board[0][4] = 'L';
@@ -238,7 +241,8 @@ int main()
         live_piece_is_stable = false;
         for (int j = 0; j < 20; j++)
         {
-            bool remove_layer = true;
+            row_pushdown_limit = j;
+            remove_layer = true;
             for (int p = 0; p < 10; p++)
             {
                 if (board[j][p] == NULL || board[j][p] == 'L')
@@ -248,10 +252,19 @@ int main()
             }
             if (remove_layer)
             {
+                score += 10;
                 for (int p = 0; p < 10; p++)
                 {
                     board[j][p] = NULL;
 
+                }
+                for (int k = j - 1; k >= 0; k--)
+                {
+                    for (int m = 0; m < 10; m++)
+                    {
+                        board[k + 1][m] = board[k][m];
+                        board[k][m] = NULL;
+                    }
                 }
             }
             for (int i = 0; i < 10; i++)
