@@ -135,8 +135,7 @@ void keycallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 void new_piece()
 {
-    //int new_piece_rand = rand() % 7;
-    int new_piece_rand = 1;
+    int new_piece_rand = rand() % 7;
     if (new_piece_rand == 0) //square
     {
         board[0][4] = 'L';
