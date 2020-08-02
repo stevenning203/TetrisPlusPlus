@@ -1,6 +1,8 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <ctime>
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 int tilesize = 40;
 int frames_since_last_moved = 0;
@@ -18,6 +20,7 @@ int score = 0;
 int frame_count = 0;
 int temp_frame = NULL;
 int row_pushdown_limit = NULL;
+static const int MAX_SCORE = 250;
 
 bool left_key_pressed = false;
 bool up_key_pressed = false;
@@ -195,9 +198,9 @@ double convert(double c, double d)
 
 void drawrect(int x, int y, int w, int h, int r, int g, int b)
 {
-    double realx = convert(x, 400) - 1;
+    double realx = convert(x, 440) - 1;
     double realy = -convert(y, 800) + 1;
-    double realw = convert(w, 400);
+    double realw = convert(w, 440);
     double realh = convert(h, 800);
 
     double realr = r / 255;
@@ -213,13 +216,20 @@ void drawrect(int x, int y, int w, int h, int r, int g, int b)
     glEnd();
 }
 
+void drawProgressBar(int x, int y, int w, int h, double percentage, bool outline = true)
+{
+    drawrect(x, y, w, h, 255, 255, 255);
+    drawrect(x + 1, y + 1, w - 2, h - 2, 0, 0, 0);
+    drawrect(x + 1, y + h - 1, w - 2, -(h * percentage - 2), 255, 255, 255);
+}
+
 int main()
 {
     srand(time(NULL));
     GLFWwindow* window;
     if (!glfwInit())
         return -1;
-    window = glfwCreateWindow(400, 800, "Tetris Plus Plus", NULL, NULL);
+    window = glfwCreateWindow(440, 800, "Tetris Plus Plus", NULL, NULL);
 
     glfwSetKeyCallback(window, keycallback);
 
@@ -236,6 +246,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         drawrect(0, 0, 400, 800, 0, 0, 0);
+        drawProgressBar(400, 0, 40, 800, (double)((double)score/(double)MAX_SCORE));
 
         live_piece_is_stable = false;
         for (int j = 0; j < 20; j++)
@@ -251,7 +262,8 @@ int main()
             }
             if (remove_layer)
             {
-                score += 10;
+                if (score <= MAX_SCORE - 10)
+                    score += 10;
                 for (int p = 0; p < 10; p++)
                 {
                     board[j][p] = NULL;
@@ -366,6 +378,7 @@ int main()
 
         if (live_piece == false)
         {
+            frames_since_last_moved = 0;
             new_piece();
         }
         frames_since_last_moved += 1;
