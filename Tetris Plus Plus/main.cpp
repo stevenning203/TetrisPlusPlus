@@ -30,6 +30,24 @@ bool solidify_next_frame = false;
 bool live_piece_is_stable = false;
 bool remove_layer = false;
 
+void WriteLivePiecePosition(int* pointerToX, int* pointerToY)
+{
+    int* x = pointerToX;
+    int* y = pointerToY;
+    char compiledRow[20];
+    char compiledColumn[10];
+    for (int r = 0; r < 20; r++)
+    {
+        for (int c = 0; c < 10; c++)
+        {
+            if (board[r][c] == 'L')
+            {
+
+            }
+        }
+    }
+}
+
 bool is_static_piece(char piece)
 {
     if (piece == NULL)
